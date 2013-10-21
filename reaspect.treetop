@@ -1,0 +1,132 @@
+grammar Reaspect
+
+    rule statements
+        sts:(stn:statement separator)* {
+            def statements
+                sts.elements.map { |st| st.stn.statement }
+            end
+        }
+    end
+
+    rule statement
+        inp:input_variable {
+            def statement
+                { :statement => :input,
+                  :variables => inp.variables }
+            end
+        }
+        /
+        out:output_variable {
+            def statement
+                { :statement => :output,
+                  :variables => out.variables }
+            end
+        }
+        /
+        var:variable {
+            def statement
+                res = var.variablesType
+                res[:statement] = :variable
+                res
+            end
+        }
+        /
+        fun:function {
+            def statement
+                res = fun.functionArgs
+                res[:statement] = :function
+                res
+            end
+        }
+    end
+
+    rule input_variable
+        '<<' spaces_opt st:input_statement other:(',' spaces_opt st:input_statement)* {
+            def variables
+                [st.variable] + other.elements.map { |i| i.st.variable }
+            end
+        }
+    end
+
+    rule input_statement
+        var:name '=' spaces_opt value:token spaces_opt {
+            def variable
+                { :name  => var.text_value.to_s,
+                  :value => value.text_value.to_s }
+            end
+        }
+    end
+
+    rule output_variable
+        '>>' spaces_opt vars:variable_list {
+            def variables
+                vars.variables
+            end
+        }
+    end
+
+    rule variable
+        typename:name vars:variable_list {
+            def variablesType
+                { :typename => typename.name,
+                  :variable => vars.variables }
+            end
+        }
+    end
+
+    rule function
+        var_res:variable_list
+        '=' spaces_opt
+        fun_name:name
+        
+        '(' spaces_opt
+        var_arg:(variable_list)?
+        ')' spaces_opt 
+        
+        {
+            def functionArgs
+                { :arguments => (var_arg.elements ? var_arg.variables: []),
+                  :result    => var_res.variables,
+                  :name      => fun_name.name }
+            end
+        }
+    end
+
+    rule variable_list
+        var:name var_token:(',' spaces_opt var_value:name)* {
+            def variables
+                [var.name] + 
+                var_token.elements.map { |token| token.var_value.name }
+            end
+        }
+    end
+
+    rule name
+        name_first:[a-zA-Z_] name_other:[a-zA-Z0-9_]* spaces_opt {
+            def name
+                name_first.text_value + name_other.text_value
+            end
+        }
+    end
+
+    rule token
+        [^;,\s]+
+    end
+
+    rule separator
+        [;\s]*
+    end
+
+    rule space
+        [\s]
+    end
+
+    rule spaces_opt
+        space*
+    end
+
+    rule spaces_req
+        space+
+    end
+
+end

@@ -1,0 +1,4 @@
+s, h = calcs(); int a, b, ololo
+s, h = calcs(a, b,alpha)
+>> s, h
+<< a=1, b = 5
