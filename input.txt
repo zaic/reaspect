@@ -1,4 +1,9 @@
-s, h = calcs(); int a, b, ololo
-s, h = calcs(a, b,alpha)
+s, h = calc1()
+s, h = calc2(a, b,alpha)
+
 >> s, h
 << a=1, b = 5
+<< alpha = 0.3
+
+double s, h, alpha
+int a, b, ololo

@@ -51,7 +51,7 @@ grammar Reaspect
     rule input_statement
         var:name '=' spaces_opt value:token spaces_opt {
             def variable
-                { :name  => var.text_value.to_s,
+                { :name  => var.name,
                   :value => value.text_value.to_s }
             end
         }
