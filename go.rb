@@ -18,3 +18,16 @@ end
 
 # kind of topsort
 graph = ReaspectGraph.new(res.statements)
+#p graph.order
+
+graph.order.each{ |fun| puts graph.functions[fun[0]].generate_header }
+puts
+puts "int main() {"
+puts
+
+graph.variables.each_value.select{ |var| var.ancestor_function == nil }.each{ |var| puts var.generate_code }
+puts
+graph.order.each{ |fun| puts graph.functions[fun[0]].generate_code }
+
+puts "}"
+

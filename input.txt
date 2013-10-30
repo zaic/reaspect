@@ -1,9 +1,11 @@
+double s, h, alpha
+int a, b, c, ololo
+
+ololo = calcOlolo(c)
 s, h = calc1()
 s, h = calc2(a, b,alpha)
+c    = calc3(a, b)
 
->> s, h
+>> s, h, ololo
 << a=1, b = 5
 << alpha = 0.3
-
-double s, h, alpha
-int a, b, ololo

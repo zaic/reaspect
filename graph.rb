@@ -26,13 +26,21 @@ class VariableNode < Node
         @out.each{ |node| node.dfs }
     end
 
-    def top_sort
+    def top_sort(order)
         return if @visited == :top_sort
         @visited = :top_sort
         @ancestor_function = @in.detect { |fun| [:dfs, :top_sort].include?(fun.visited) }
-        @ancestor_function.top_sort
+        @ancestor_function.top_sort(order)
     end
-    
+
+    def code_name
+        @ancestor_function ? @name + "_" + @ancestor_function.name : @name
+    end
+
+    def generate_code
+        @type.to_s + " " + code_name 
+    end
+
 end
 
 class FunctionNode < Node
@@ -45,7 +53,7 @@ class FunctionNode < Node
     end
 
     def execute?
-        @exec
+        @visited == :top_sort
     end
     
     def dfs
@@ -55,10 +63,28 @@ class FunctionNode < Node
         @out.each{ |var| var.dfs }
     end
 
-    def top_sort
+    def top_sort(order)
         return if @visited == :top_sort
         @visited = :top_sort
-        @in.each { |var| var.top_sort }
+        dependencies = @in.map do |var| 
+            var.top_sort(order)
+            var.ancestor_function
+        end.sort.select{ |fun| fun }.uniq.map{ |fun| fun.name } # ToDo refactor
+        order << [name, dependencies];
+    end
+
+    def generate_code
+        var_def = @out.map{ |var| var.type.to_s + " " + var.name + "_" + @name + "();" }.join("\n")
+        arg_def = @in.map{ |var| var.code_name + ", "}.join +
+            @out.map{ |var| var.name + "_" + @name}.join(", ");
+#arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join + @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @name}.join(", ");
+        var_def + "\n" + name + "(" + arg_def + ");\n\n"
+    end
+
+    def generate_header
+        arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join + 
+            @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @name}.join(", ");
+        "void " + name + " (" + arg_def + ");\n"
     end
 
 end
@@ -108,7 +134,7 @@ class ReaspectGraph
     def top_sort
         @input.each{ |var| var.dfs }
         @input.each{ |var| var.visited = :top_sort }
-        @output.each{ |var| var.top_sort }
+        @output.each{ |var| var.top_sort(@order) }
     end
 
     def initialize(parser_result)
@@ -118,6 +144,7 @@ class ReaspectGraph
         fill_variables(parser_result)
         fill_functions(parser_result)
         fill_inout(parser_result)
+        @order = []
         top_sort
     end
 
