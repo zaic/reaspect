@@ -1,11 +1,12 @@
-double s, h, alpha
-int a, b, c, ololo
+double a, b, c, s
+double h, alpha
 
-ololo = calcOlolo(c)
-s, h = calc1()
-s, h = calc2(a, b,alpha)
-c    = calc3(a, b)
+s = calcS(a, b, c)
+s = calcSqrByH(c, h)
+c = calcHyp(a, b)
+a, b = calcCat(c, alpha)
+alpha = calcAlpha(c, a)
+h = calcH(c, a, b)
 
->> s, h, ololo
-<< a=1, b = 5
-<< alpha = 0.3
+>> s
+<< a = 3, b = 4, c = 5, h = 0

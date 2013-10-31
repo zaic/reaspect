@@ -14,6 +14,7 @@ class VariableNode < Node
 
     attr_accessor :visited
     attr_reader :ancestor_function, :type
+    attr_accessor :value
 
     def initialize(name, type)
         super(name)
@@ -38,7 +39,7 @@ class VariableNode < Node
     end
 
     def generate_code
-        @type.to_s + " " + code_name 
+        @type.to_s + " " + code_name + " = " + value.to_s + ";"
     end
 
 end
@@ -69,12 +70,12 @@ class FunctionNode < Node
         dependencies = @in.map do |var| 
             var.top_sort(order)
             var.ancestor_function
-        end.sort.select{ |fun| fun }.uniq.map{ |fun| fun.name } # ToDo refactor
+        end.select{ |fun| fun }.sort.uniq.map{ |fun| fun.name } # ToDo refactor
         order << [name, dependencies];
     end
 
     def generate_code
-        var_def = @out.map{ |var| var.type.to_s + " " + var.name + "_" + @name + "();" }.join("\n")
+        var_def = @out.map{ |var| var.type.to_s + " " + var.name + "_" + @name + ";" }.join("\n")
         arg_def = @in.map{ |var| var.code_name + ", "}.join +
             @out.map{ |var| var.name + "_" + @name}.join(", ");
 #arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join + @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @name}.join(", ");
@@ -124,7 +125,10 @@ class ReaspectGraph
         statements.each do |st|
             case st[:statement]
                 when :input then
-                    st[:variables].each{ |var| @input << @variables[var[:name]] }
+                    st[:variables].each{ |var| 
+                        @input << @variables[var[:name]] 
+                        @variables[var[:name]].value = var[:value]
+                    }
                 when :output then 
                     st[:variables].each{ |var| @output << @variables[var] }
             end
