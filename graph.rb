@@ -1,4 +1,4 @@
-class Node
+class GraphNode
 
     attr_accessor :in, :out
     attr_reader :name
@@ -10,7 +10,11 @@ class Node
 
 end
 
-class VariableNode < Node
+class GraphException < StandardError
+
+end
+
+class VariableNode < GraphNode
 
     attr_accessor :visited
     attr_reader :ancestor_function, :type
@@ -44,7 +48,7 @@ class VariableNode < Node
 
 end
 
-class FunctionNode < Node
+class FunctionNode < GraphNode
 
     attr_reader :visited
 
@@ -107,13 +111,13 @@ class ReaspectGraph
             node = FunctionNode.new(st[:name])
             st[:arguments].each do |arg|
                 arg_node = @variables[arg]
-                # ToDo throw exception if arg_node is nil
+                raise GraphException.new "Unkonwn varialbe '#{arg}' in function '#{st[:name]}' arguments." unless arg_node
                 node.in << arg_node
                 arg_node.out << node
             end
             st[:result].each do |res|
                 res_node = @variables[res]
-                # ToDo throw one more exception
+                raise GraphException.new "Unkonwn varialbe '#{res}' in function '#{st[:name]}' result." unless res_node
                 node.out << res_node
                 res_node.in << node
             end
@@ -125,12 +129,18 @@ class ReaspectGraph
         statements.each do |st|
             case st[:statement]
                 when :input then
-                    st[:variables].each{ |var| 
-                        @input << @variables[var[:name]] 
-                        @variables[var[:name]].value = var[:value]
-                    }
+                    st[:variables].each do |var| 
+                        variable = @variables[var[:name]] 
+                        raise GraphException.new "Unkonwn input variable '#{var[:name]}'" unless variable
+                        @input << variable
+                        variable.value = var[:value]
+                    end
                 when :output then 
-                    st[:variables].each{ |var| @output << @variables[var] }
+                    st[:variables].each do |var| 
+                        variable = @variables[var] 
+                        raise GraphException.new "Unkonwn output variable '#{var}'" unless variable
+                        @output << variable
+                    end
             end
         end
     end

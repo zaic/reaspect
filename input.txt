@@ -1,5 +1,5 @@
 double a, b, c, s
-double h, alpha
+double h  , alpha
 
 s = calcS(a, b, c)
 s = calcSqrByH(c, h)

@@ -2,23 +2,36 @@ require 'polyglot'
 require 'treetop'
 require_relative 'graph.rb'
 
+#
 # parse input
+#
+$stderr.print "1. Parsing input file... "
+
 Treetop.load 'reaspect'
 parser = ReaspectParser.new
 
 res = parser.parse File.read('input.txt')
 if res then
-#p res.statements
+    $stderr.puts "OK"
 else
-    puts parser.failure_reason
-    puts parser.failure_line
-    puts parser.failure_column
-    exit(1)
+    $stderr.puts "FAIL"
+    $stderr.puts "Parsing failed on line #{parser.failure_line} column #{parser.failure_column} with reason '#{parser.failure_reason}'"
+    exit 1
 end
 
 # kind of topsort
-graph = ReaspectGraph.new(res.statements)
+$stderr.print "2. Topsorting... "
+begin
+    graph = ReaspectGraph.new(res.statements)
+rescue GraphException => e
+    $stderr.puts "FAIL"
+    $stderr.puts e.message
+    exit 1
+end
 #p graph.order
+$stderr.puts "OK"
+
+$stderr.print "3. Generating C++ program... "
 
 graph.order.each{ |fun| puts graph.functions[fun[0]].generate_header }
 puts
@@ -32,3 +45,4 @@ graph.order.each{ |fun| puts graph.functions[fun[0]].generate_code }
 puts "return 0;"
 puts "}"
 
+$stderr.puts "OK"
