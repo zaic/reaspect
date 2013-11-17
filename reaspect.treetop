@@ -23,6 +23,13 @@ grammar Reaspect
             end
         }
         /
+        con:const_variable {
+            def statement
+                { :statement => :const,
+                  :variables => con.variables }
+            end
+        }
+        /
         var:variable {
             def statement
                 res = var.variablesType
@@ -40,15 +47,23 @@ grammar Reaspect
         }
     end
 
-    rule input_variable
-        '<<' spaces_opt st:input_statement other:(',' spaces_opt st:input_statement)* {
+    rule const_variable
+        'const' spaces_opt st:assignment_statement other:(',' spaces_opt st:assignment_statement)* {
             def variables
                 [st.variable] + other.elements.map { |i| i.st.variable }
             end
         }
     end
 
-    rule input_statement
+    rule input_variable
+        '<<' spaces_opt st:assignment_statement other:(',' spaces_opt st:assignment_statement)* {
+            def variables
+                [st.variable] + other.elements.map { |i| i.st.variable }
+            end
+        }
+    end
+
+    rule assignment_statement
         var:name '=' spaces_opt value:token spaces_opt {
             def variable
                 { :name  => var.name,

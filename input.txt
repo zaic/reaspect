@@ -10,3 +10,5 @@ h = calcH(c, a, b)
 
 >> s
 << a = 3, b = 4, c = 5, h = 0
+
+const A = 12, B = 2*A

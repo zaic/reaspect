@@ -96,9 +96,19 @@ end
 
 class ReaspectGraph
 
-    attr_reader :variables, :functions, :order
+    attr_reader :constants, :variables, :functions, :order
+
+    def fill_constants(statement)
+        # ToDo check for redefinition
+        statement.select{ |st| st[:statement] == :const }.each do |st|
+            st[:variables].each do |var|
+                @constants[var[:name]] = var[:value]
+            end
+        end
+    end
 
     def fill_variables(statements)
+        # ToDo check for redefinition
         statements.select{ |st| st[:statement] == :variable }.each do |st|
             st[:variable].each do |var_name| 
                 @variables[var_name] = VariableNode.new(var_name, st[:typename])
@@ -155,9 +165,13 @@ class ReaspectGraph
         @variables = {}
         @functions = {}
         @input, @output = [], []
+        @constants = {}
+
+        fill_constants(parser_result)
         fill_variables(parser_result)
         fill_functions(parser_result)
         fill_inout(parser_result)
+
         @order = []
         top_sort
     end
