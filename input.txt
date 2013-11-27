@@ -12,3 +12,6 @@ h = calcH(c, a, b)
 << a = 3, b = 4, c = 5, h = 0
 
 const A = 12, B = 2*A
+int test[2]
+
+a = testMass(test[i]) for i = 0 ... 2;

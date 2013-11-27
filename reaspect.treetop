@@ -70,6 +70,13 @@ grammar Reaspect
                   :value => value.text_value.to_s }
             end
         }
+        /
+        var:array spaces_opt {
+            def variable
+                { :name  => var.name,
+                  :value => value.text_value.to_s }
+            end
+        }
     end
 
     rule output_variable
@@ -96,22 +103,51 @@ grammar Reaspect
         
         '(' spaces_opt
         var_arg:(variable_list)?
-        ')' spaces_opt 
+        ')' spaces_opt
+
+        mass_eval:(
+            'for' spaces_req counter:name spaces_opt
+            '=' spaces_opt bound_from:arithmetic spaces_opt
+            '...' spaces_opt bound_to:arithmetic spaces_opt
+            ';' spaces_opt
+        )*
         
         {
             def functionArgs
                 { :arguments => (var_arg.elements ? var_arg.variables: []),
                   :result    => var_res.variables,
-                  :name      => fun_name.name }
+                  :name      => fun_name.name,
+                  :mass      => mass_eval.elements.map do |counter|
+                    {
+                        :counter    => counter.counter.name,
+                        :bound_from => counter.bound_from.expression,
+                        :bound_to   => counter.bound_to.expression
+                    }
+                  end
+                }
             end
         }
     end
 
     rule variable_list
-        var:name var_token:(',' spaces_opt var_value:name)* {
+        var:variable_name var_token:(',' spaces_opt var_value:variable_name)* {
             def variables
-                [var.name] + 
-                var_token.elements.map { |token| token.var_value.name }
+                [var.variable] +
+                var_token.elements.map { |cur| cur.var_value.variable }
+            end
+        }
+    end
+
+
+
+    rule variable_name
+        var_name:name var_dim:('[' size:arithmetic ']')* {
+            def variable
+                short_name = var_name.name
+                dims = var_dim.elements.map{ |dim| dim.size.expression }
+                # long_name = dims.reduce(short_name) { |res, cur| res += '[' + cur.to_s + ']' }
+                { :name => short_name,
+                  :dims => dims }
             end
         }
     end
@@ -120,6 +156,16 @@ grammar Reaspect
         name_first:[a-zA-Z_] name_other:[a-zA-Z0-9_]* spaces_opt {
             def name
                 name_first.text_value + name_other.text_value
+            end
+        }
+    end
+
+
+
+    rule arithmetic
+        val:[a-zA-Z0-9_\+\-\*\/\s]+ {
+            def expression
+                val.text_value
             end
         }
     end
