@@ -1,5 +1,5 @@
 double a, b, c, s
-double h  , alpha
+double h , alpha
 
 s = calcS(a, b, c)
 s = calcSqrByH(c, h)
@@ -15,3 +15,9 @@ const A = 12, B = 2*A
 int test[2]
 
 a = testMass(test[i]) for i = 0 ... 2;
+
+int t
+>> t
+int arr[3], sqr[3], sum[3]
+sqr[i] = doSqrt(arr[i]) for i = 0 ... 2;
+sum[i] = doSum(arr[i], sum[i-1]) for i = 1 ... 2;

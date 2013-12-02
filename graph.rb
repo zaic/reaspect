@@ -100,7 +100,8 @@ class ReaspectGraph
     attr_reader :constants, :variables, :arrays, :functions, :order
 
     def eval_index(expression, counters = {})
-        # expression = (counters.merge(@constants)).reduce('') { |str, cur| str +=  "#{cur[0]} = #{cur[1]}; " } + expression
+        expression = (counters.merge(@constants)).reduce('') { |str, cur| str +=  "#{cur[0]} = #{cur[1]}; " } + expression
+        p expression
         eval(expression)
     end
 
@@ -108,7 +109,7 @@ class ReaspectGraph
         # ToDo check for redefinition
         statement.select{ |st| st[:statement] == :const }.each do |st|
             st[:variables].each do |var|
-                @constants[var[:name]] = var[:value]
+                @constantsq[var[:name]] = var[:value]
             end
         end
     end
@@ -165,7 +166,6 @@ class ReaspectGraph
     end
 
     def generate_var_name(arg, counters)
-        p arg
         name = arg[:name]
         if @variables.has_key?(name) then
             return name
@@ -178,7 +178,7 @@ class ReaspectGraph
 
     def add_mass_function(st)
         p "!!!!!!"
-        p st[:mass]
+# p st[:mass]
         generate_index_values(st[:mass]).each do |counters|
             p counters
             cur_st = {}

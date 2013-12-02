@@ -130,7 +130,7 @@ grammar Reaspect
     end
 
     rule variable_list
-        var:variable_name var_token:(',' spaces_opt var_value:variable_name)* {
+        var:variable_name var_token:(',' spaces_opt var_value:variable_name )* spaces_opt {
             def variables
                 [var.variable] +
                 var_token.elements.map { |cur| cur.var_value.variable }
@@ -141,7 +141,7 @@ grammar Reaspect
 
 
     rule variable_name
-        var_name:name var_dim:('[' size:arithmetic ']')* {
+        var_name:name var_dim:('[' size:arithmetic ']')* spaces_opt {
             def variable
                 short_name = var_name.name
                 dims = var_dim.elements.map{ |dim| dim.size.expression }
