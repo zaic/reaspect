@@ -1,6 +1,6 @@
 require 'polyglot'
 require 'treetop'
-require_relative 'graph.rb'
+require_relative 'graph/graph'
 
 #
 # parse input

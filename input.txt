@@ -1,7 +1,9 @@
+const qARRSIZE = 3
+
 int to, from
-int arr[3], sqr[3]
+int arr[qARRSIZE], sqr[qARRSIZE]
 >> to
 << from = 5
-arr[i] = doSqrt(from) for i = 0 ... 3;
-sqr[i] = sqr(arr[i]) for i = 0 ... 3;
+arr[i] = doSqrt(from) for i = 0 ... qARRSIZE;
+sqr[i] = sqr(arr[i]) for i = 0 ... qARRSIZE;
 to = doSum(sqr[0], sqr[1], sqr[2])

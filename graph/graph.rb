@@ -1,128 +1,8 @@
-class GraphNode
-
-    attr_accessor :in, :out
-    attr_reader :name
-
-    def initialize(name)
-        @in, @out = [], []
-        @name = name
-    end
-
-end
+require_relative 'variable'
+require_relative 'array'
+require_relative 'function'
 
 class GraphException < StandardError
-
-end
-
-class VariableNode < GraphNode
-
-    attr_accessor :visited
-    attr_reader :ancestor_function, :type
-    attr_accessor :value
-
-    def initialize(name, type)
-        super(name)
-        @type = type
-    end
-
-    def dfs
-        return if @visited
-        @visited = :dfs
-        @out.each{ |node| node.dfs }
-    end
-
-    def top_sort(order)
-        return if @visited == :top_sort
-        @visited = :top_sort
-        @ancestor_function = @in.detect { |fun| [:dfs, :top_sort].include?(fun.visited) }
-        @ancestor_function.top_sort(order)
-    end
-
-    def code_name
-        @ancestor_function ? @name + "_" + @ancestor_function.name : @name
-    end
-
-    def generate_code
-        return if not @type
-        @type.to_s + " " + code_name + " = " + value.to_s + ";"
-    end
-
-end
-
-class ArrayNode < GraphNode
-
-    # attr_accessor :visited
-    attr_reader :ancestor_function, :type
-    # attr_accessor :value
-
-    def initialize(name, type, elements)
-        super(name)
-        @type = type
-        @elements = elements
-    end
-
-    def dfs
-        return if @visited
-        @visited = :dfs
-        @elements.each{ |element| element.dfs }
-    end
-
-    def top_sort(order)
-        return if @visited == :top_sort
-        @visited = :top_sort
-        @elements.each { |element| element.top_sort(order) }
-    end
-
-    def code_name
-        @ancestor_function ? @name + "_" + @ancestor_function.name : @name
-    end
-
-end
-
-class FunctionNode < GraphNode
-
-    attr_reader :visited
-
-    def initialize(name, code_name)
-        super(name)
-        @code_name = code_name
-        @visited = 0
-    end
-
-    def execute?
-        @visited == :top_sort
-    end
-    
-    def dfs
-        @visited += 1
-        return if @visited != @in.size
-        @visited = :dfs
-        @out.each{ |var| var.dfs }
-    end
-
-    def top_sort(order)
-        return if @visited == :top_sort
-        @visited = :top_sort
-        dependencies = @in.map do |var| 
-            var.top_sort(order)
-            var.ancestor_function
-        end.flatten.select{ |fun| fun }.map{ |fun| fun.name }.sort.uniq # ToDo refactor
-        order << [name, dependencies];
-    end
-
-    def generate_code
-        var_def = @out.map{ |var| var.type.to_s + " " + var.name + "_" + @code_name + ";" }.join("\n")
-        arg_def = @in.map{ |var| var.code_name + ", "}.join +
-            @out.map{ |var| var.name + "_" + @code_name}.join(", ");
-#arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join + @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @name}.join(", ");
-        var_def + "\n" + name + "(" + arg_def + ");\n\n" # ToDo name -> @code_name ?
-    end
-
-    def generate_header
-        arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join + 
-            @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @code_name}.join(", ");
-        "void " + name + " (" + arg_def + ");\n"
-    end
 
 end
 
@@ -151,7 +31,7 @@ class ReaspectGraph
             st[:variable].each do |var|
                 var_name = var[:name]
                 if var[:dims].size > 0 then
-                    dims = var[:dims].map(&:to_i) # ToDo: use eval
+                    dims = var[:dims].map{ |dim| generate_var_name({ :name => dim }) }
                     @arrays[var_name] = dims
                     dims.reduce(:*).times do |id|
                         cid = id
@@ -199,7 +79,7 @@ class ReaspectGraph
     end
 
     def generate_var_name(arg, counters = {})
-         p "generate var name, arg = " + arg.to_s
+        # p "generate var name, arg = " + arg.to_s
         name = arg[:name]
         if @variables.has_key?(name) then
             # p "i'm is variable"
@@ -214,29 +94,22 @@ class ReaspectGraph
     end
 
     def add_mass_function(st)
-         p "add mass function" + st.to_s
+        # p "add mass function" + st.to_s
         generate_index_values(st[:mass]).each do |counters|
-             puts "counters = " + counters.to_s
+            # puts "counters = " + counters.to_s
             cur_st = { :statement => :function,
                        :name      => st[:name] + '_' + counters.each_value.map { |val| val.to_s }.join('_') ,
                        :code_name => st[:name],
-                       :arguments => [],
-                       :result    => [] }
-            # ToDo refactor to map
-            st[:arguments].each { |arg| cur_st[:arguments] << { :name => generate_var_name(arg, counters) } }
-            st[:result].each { |arg| cur_st[:result] << { :name => generate_var_name(arg, counters) } }
+                       :arguments => st[:arguments].map{ |arg| { :name => generate_var_name(arg, counters), :dims => [] } },
+                       :result    => st[:result].map { |arg| { :name => generate_var_name(arg, counters), :dims => [] } } }
             add_scalar_function(cur_st)
         end
-         p "end mass function"
+        # p "end mass function"
     end
 
     def fill_functions(statements)
         statements.select{ |st| st[:statement] == :function }.each do |st|
-            if st[:mass].size == 0
-                add_scalar_function(st)
-            else
-                add_mass_function(st)
-            end
+            st[:mass].size == 0 ? add_scalar_function(st) : add_mass_function(st)
         end
     end
 
@@ -250,6 +123,7 @@ class ReaspectGraph
                         @input << variable
                         variable.value = var[:value]
                     end
+
                 when :output then 
                     st[:variables].each do |var| 
                         variable = @variables[var[:name]]
@@ -274,9 +148,9 @@ class ReaspectGraph
 
         fill_constants(parser_result)
         fill_variables(parser_result)
-        p @variables
+        # p @variables
         fill_functions(parser_result)
-        @functions.each_key { |key| p "function " + key + ": " + @functions[key].to_s }
+        # @functions.each_key { |key| p "function " + key + ": " + @functions[key].to_s }
         fill_inout(parser_result)
 
         @order = []
