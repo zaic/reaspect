@@ -4,6 +4,6 @@ int to, from
 int arr[qARRSIZE], sqr[qARRSIZE]
 >> to
 << from = 5
-arr[i] = doSqrt(from) for i = 0 ... qARRSIZE;
+arr[0], arr[1], arr[2] = initRand(from)
 sqr[i] = sqr(arr[i]) for i = 0 ... qARRSIZE;
 to = doSum(sqr[0], sqr[1], sqr[2])

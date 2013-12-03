@@ -36,7 +36,7 @@ class ReaspectGraph
                     dims.reduce(:*).times do |id|
                         cid = id
                         var_name_with_id = dims.reverse.map { |i| res, cid = cid % i, cid / i; res }.reverse.reduce(var_name) { |str, cur| str += '[' + cur.to_s + ']' }
-                        @variables[var_name_with_id] = VariableNode.new(var_name_with_id, nil)
+                        @variables[var_name_with_id] = ArrayElementNode.new(var_name_with_id, st[:typename])
                     end
                 else
                     @variables[var_name] = VariableNode.new(var_name, st[:typename])

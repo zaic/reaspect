@@ -2,7 +2,7 @@ require_relative 'node'
 
 class FunctionNode < GraphNode
 
-    attr_reader :visited
+    attr_reader :visited, :code_name
 
     def initialize(name, code_name)
         super(name)
@@ -32,11 +32,10 @@ class FunctionNode < GraphNode
     end
 
     def generate_code
-        var_def = @out.map{ |var| var.type.to_s + " " + var.name + "_" + @code_name + ";" }.join("\n")
-        arg_def = @in.map{ |var| var.code_name + ", "}.join +
-            @out.map{ |var| var.name + "_" + @code_name}.join(", ");
-#arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join + @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @name}.join(", ");
-        var_def + "\n" + @code_name + "(" + arg_def + ");\n\n" # ToDo name -> @code_name ?
+        var_def = @out.map{ |var| var.generate_definition }.join
+        arg_def = @in.map { |var| var.code_name }.join(', ') + ',   ' +
+                  @out.map{ |var| var.code_name }.join(', ');
+        var_def + @code_name + '(' + arg_def + ");\n\n"
     end
 
     def generate_header

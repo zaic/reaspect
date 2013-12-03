@@ -33,16 +33,24 @@ $stderr.puts "OK"
 
 $stderr.print "3. Generating C++ program... "
 
+
+puts '#include <iostream>'
+puts 'using std::cout;'
+puts 'using std::endl;'
+puts
 graph.order.each{ |fun| puts graph.functions[fun[0]].generate_header }
 puts
-puts "int main() {"
+puts 'int main() {'
 puts
 
 graph.variables.each_value.select{ |var| var.ancestor_function == nil }.select{ |var| var.value != nil }.each{ |var| puts var.generate_code }
+# ToDo generate arrays definition
 puts
 graph.order.each{ |fun| puts graph.functions[fun[0]].generate_code }
 
-puts "return 0;"
-puts "}"
+# ToDo generate result output
 
-$stderr.puts "OK"
+puts 'return 0;'
+puts '}'
+
+$stderr.puts 'OK'

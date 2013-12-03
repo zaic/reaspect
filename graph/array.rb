@@ -6,14 +6,14 @@ class ArrayNode < GraphNode
     attr_reader :ancestor_function, :type
     # attr_accessor :value
 
-    def initialize(name, type, elements)
+    def initialize(name, type)
         super(name)
         @type = type
-        @elements = elements
+        @elements = []
     end
 
     def dfs
-        return if @visited
+        return if @visited == :dfs
         @visited = :dfs
         @elements.each{ |element| element.dfs }
     end
@@ -25,7 +25,27 @@ class ArrayNode < GraphNode
     end
 
     def code_name
-        @ancestor_function ? @name + "_" + @ancestor_function.name : @name
+        @name
+    end
+
+    def ancestor_function
+        @elements.reduce([]){ |element, res| res << element.ancestor_function }.flatten
+    end
+
+end
+
+class ArrayElementNode < VariableNode
+
+    def initialize(name, type)
+        super(name, type)
+    end
+
+    def code_name
+        @name
+    end
+
+    def generate_definition
+        ''
     end
 
 end
