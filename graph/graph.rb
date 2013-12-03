@@ -32,7 +32,7 @@ class ReaspectGraph
                 var_name = var[:name]
                 if var[:dims].size > 0 then
                     dims = var[:dims].map{ |dim| generate_var_name({ :name => dim }) }
-                    @arrays[var_name] = dims
+                    @arrays[var_name] = dims # !!! ToDo !!! push ArrayNode instead of dimensions
                     dims.reduce(:*).times do |id|
                         cid = id
                         var_name_with_id = dims.reverse.map { |i| res, cid = cid % i, cid / i; res }.reverse.reduce(var_name) { |str, cur| str += '[' + cur.to_s + ']' }

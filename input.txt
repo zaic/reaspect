@@ -1,9 +1,9 @@
-const qARRSIZE = 3
+const qArrSize = 3
 
 int to, from
-int arr[qARRSIZE], sqr[qARRSIZE]
+int arr[qArrSize], sqr[qArrSize]
 >> to
 << from = 5
 arr[0], arr[1], arr[2] = initRand(from)
-sqr[i] = sqr(arr[i]) for i = 0 ... qARRSIZE;
-to = doSum(sqr[0], sqr[1], sqr[2])
+sqr[i] = sqr(arr[i]) for i = 0 ... qArrSize;
+to = doSum(sqr)
