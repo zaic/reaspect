@@ -32,11 +32,14 @@ class ReaspectGraph
                 var_name = var[:name]
                 if var[:dims].size > 0 then
                     dims = var[:dims].map{ |dim| generate_var_name({ :name => dim }) }
-                    @arrays[var_name] = dims # !!! ToDo !!! push ArrayNode instead of dimensions
+                    # @arrays[var_name] = dims # !!! ToDo !!! push ArrayNode instead of dimensions
+                    array_node = ArrayNode.new(var_name, st[:typename], dims)
+                    @arrays[var_name] = @variables[var_name] = array_node
                     dims.reduce(:*).times do |id|
                         cid = id
                         var_name_with_id = dims.reverse.map { |i| res, cid = cid % i, cid / i; res }.reverse.reduce(var_name) { |str, cur| str += '[' + cur.to_s + ']' }
-                        @variables[var_name_with_id] = ArrayElementNode.new(var_name_with_id, st[:typename])
+                        @variables[var_name_with_id] = element_node = ArrayElementNode.new(var_name_with_id, st[:typename], array_node)
+                        array_node.elements << element_node
                     end
                 else
                     @variables[var_name] = VariableNode.new(var_name, st[:typename])
@@ -81,12 +84,12 @@ class ReaspectGraph
     def generate_var_name(arg, counters = {})
         # p "generate var name, arg = " + arg.to_s
         name = arg[:name]
-        if @variables.has_key?(name) then
-            # p "i'm is variable"
-            return name
-        elsif @arrays.has_key?(name) then
+        if @arrays.has_key?(name) then
             # p "i'm is array"
             return name + arg[:dims].map{ |var| '[' + eval_index(var, counters).to_s + ']' }.join
+        elsif @variables.has_key?(name) then
+            # p "i'm is variable"
+            return name
         else
             # p "i'm is index oO"
             return eval_index(name, counters)

@@ -39,9 +39,9 @@ class FunctionNode < GraphNode
     end
 
     def generate_header
-        arg_def = @in.map{ |var| "const " + var.type.to_s + "& " + var.code_name + ", "}.join +
-            @out.map{ |var| var.type.to_s + "& " + var.name + "_" + @code_name}.join(", ");
-        "void " + @code_name + " (" + arg_def + ");\n"
+        arg_def = @in.map{ |var| 'const ' + var.type.to_s + '& ' + var.code_name + ', '}.join +
+            @out.map{ |var| var.type.to_s + '& ' + var.name + '_' + @code_name}.join(', ');
+        'void ' + @code_name + ' (' + arg_def + ");\n"
     end
 
 end
