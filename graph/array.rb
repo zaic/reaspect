@@ -66,6 +66,10 @@ class ArrayNode < VariableNode
         generate_argument_code
     end
 
+    def generate_output
+        'cout << ' + '"' + name + '" ' + ' << " = [" << ' + @elements.map{ |i| i.code_name }.join(' << ", " << ') + ' << "]" << endl;'
+    end
+
 end
 
 class ArrayElementNode < VariableNode
@@ -102,11 +106,11 @@ class ArrayElementNode < VariableNode
     end
 
     def generate_argument_code
-        'const ' + @type.to_s + '& '
+        'const ' + @type.to_s + '& ' + code_name.tr('[]', '_')
     end
 
     def generate_result_code
-        @type.to_s + '& '
+        @type.to_s + '& ' + code_name.tr('[]', '_')
     end
 
 end

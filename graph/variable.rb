@@ -54,4 +54,8 @@ class VariableNode < GraphNode
         @type.to_s + '& ' + code_name
     end
 
+    def generate_output
+        'cout << ' + '"' + name + '" ' + ' << " = " << ' + code_name + ' << endl;'
+    end
+
 end

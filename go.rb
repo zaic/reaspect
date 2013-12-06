@@ -48,7 +48,7 @@ graph.arrays.each_value{ |arr| puts arr.generate_code }
 puts
 graph.order.each{ |fun| puts graph.functions[fun[0]].generate_code }
 
-# ToDo generate result output
+graph.output.each { |var| puts var.generate_output }
 
 puts 'return 0;'
 puts '}'

@@ -9,6 +9,7 @@ end
 class ReaspectGraph
 
     attr_reader :constants, :variables, :arrays, :functions, :order
+    attr_reader :input, :output
 
     def eval_index(expression, counters = {})
         expression = (counters.merge(@constants)).reduce('') { |str, cur| str +=  "#{cur[0]} = #{cur[1]}; " } + expression
