@@ -34,7 +34,7 @@ rescue GraphException => e
     $stderr.puts e.message
     exit 1
 end
-#p graph.order
+
 $stderr.puts "OK"
 
 $stderr.print "3. Generating C++ program... "
@@ -44,7 +44,7 @@ puts '#include <iostream>'
 puts 'using std::cout;'
 puts 'using std::endl;'
 puts
-graph.order.each{ |fun| puts graph.functions[fun[0]].generate_header }
+graph.order.map{ |fun| graph.functions[fun[0]] }.sort_by{ |fun| fun.code_name }.uniq{ |fun| fun.code_name }.each{ |fun| puts fun.generate_header }
 puts
 puts 'int main() {'
 puts

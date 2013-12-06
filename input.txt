@@ -6,11 +6,4 @@ int arr[qArrSize], sqr[qArrSize]
 << from = 5
 arr[0], arr[1], arr[2] = initRand(from)
 sqr[i] = sqrf(arr[i]) for i = 0 ... qArrSize;
-to = doSum(arr)
-
-int reverse_to, reverse_from, reverse_arr[qArrSize], reverse_sqr[qArrSize]
->> reverse_to, reverse_arr
-<< reverse_from = 7
-reverse_arr = reverseInitRand(reverse_from)
-reverse_sqr[i] = sqrf(reverse_arr[i]) for i = 0 ... qArrSize;
-reverse_to = reverseDoSum(reverse_arr[0], reverse_arr[1], reverse_arr[2])
+to = doSum(sqr)

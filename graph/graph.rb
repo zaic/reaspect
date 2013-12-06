@@ -52,14 +52,12 @@ class ReaspectGraph
     def add_scalar_function(st)
         node = FunctionNode.new(st[:name], st[:code_name] ? st[:code_name] : st[:name]) # ToDo refactor
         st[:arguments].each do |arg|
-            # arg_node = generate_var_name(@variables[arg[:name]])
             arg_node = @variables[generate_var_name(arg)]
             raise GraphException.new "Unknown variable '#{arg}' in function '#{st[:name]}' arguments." unless arg_node
             node.in << arg_node
             arg_node.out << node
         end
         st[:result].each do |res|
-            # res_node = generate_var_name(@variables[res[:name]])
             res_node = @variables[generate_var_name(res)]
             raise GraphException.new "Unknown variable '#{res}' in function '#{st[:name]}' result." unless res_node
             node.out << res_node
