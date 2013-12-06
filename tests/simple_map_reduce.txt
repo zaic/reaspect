@@ -1,0 +1,12 @@
+const kArrSize = 10
+
+int randSeed
+double inArray[kArrSize], outArray[kArrSize]
+double sqrSum
+
+<< randSeed = 1
+>> sqrSum
+
+inArray = fillArray(randSeed)
+outArray[i] = squareRoot(inArray[i]) for i = 0 ... kArrSize;
+sqrSum = sumArray(outArray)
