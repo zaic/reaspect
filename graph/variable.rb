@@ -14,7 +14,6 @@ class VariableNode < GraphNode
     def dfs
         return if @visited == :dfs
         @visited = :dfs
-        p "dfs: " + name
         @out.each{ |node| node.dfs }
     end
 
@@ -22,8 +21,6 @@ class VariableNode < GraphNode
         return if @visited == :top_sort
         @visited = :top_sort
         @ancestor_function = @in.detect { |fun| [:dfs, :top_sort].include?(fun.visited) }
-        p name
-        p @ancestor_function
         @ancestor_function.top_sort(order)
     end
 

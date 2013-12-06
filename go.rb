@@ -43,8 +43,8 @@ puts
 puts 'int main() {'
 puts
 
-graph.variables.each_value.select{ |var| var.ancestor_function == nil }.select{ |var| var.value != nil }.each{ |var| puts var.generate_code }
-# ToDo generate arrays definition
+graph.variables.each_value.select{ |var| var.ancestor_function == nil and var.value != nil }.each{ |var| puts var.generate_code }
+graph.arrays.each_value{ |arr| puts arr.generate_code }
 puts
 graph.order.each{ |fun| puts graph.functions[fun[0]].generate_code }
 

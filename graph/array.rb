@@ -16,7 +16,6 @@ class ArrayNode < VariableNode
     def dfs
         return if @visited == :dfs
         @visited = :dfs
-        p "dfs: " + @name
         @out.each{ |var| var.dfs }
         @elements.each{ |element| element.dfs }
     end
@@ -45,13 +44,20 @@ class ArrayNode < VariableNode
 
     # Code generation
 
-    # ToDo write full code generation
+    # Variable initialization or definition:
+    #   char string[256]
+    def generate_code
+        @type.to_s + ' ' + code_name + @dims.map{ |i| '[' + i.to_s + ']'}.join + ';'
+    end
+
+    def generate_definition
+        ''
+    end
 
     # Variable as function argument:
     #   f(int data[8]);
     def generate_argument_code
-        # ToDo add dims
-        @type.to_s + ' ' + code_name
+        @type.to_s + ' ' + code_name + @dims.map{ |i| '[' + i.to_s + ']'}.join
     end
 
     # Variable as function result:
@@ -93,6 +99,14 @@ class ArrayElementNode < VariableNode
 
     def generate_definition
         ''
+    end
+
+    def generate_argument_code
+        'const ' + @type.to_s + '& '
+    end
+
+    def generate_result_code
+        @type.to_s + '& '
     end
 
 end
