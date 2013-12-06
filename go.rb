@@ -2,6 +2,12 @@ require 'polyglot'
 require 'treetop'
 require_relative 'graph/graph'
 
+if ARGV.size != 1
+    $stderr.puts "Usage: #{$PROGRAM_NAME} input_file"
+    exit 1
+end
+input_file = ARGV[0].to_s
+
 #
 # parse input
 #
@@ -10,7 +16,7 @@ $stderr.print "1. Parsing input file... "
 Treetop.load 'reaspect'
 parser = ReaspectParser.new
 
-res = parser.parse File.read('input.txt')
+res = parser.parse File.read(input_file)
 if res then
     $stderr.puts "OK"
 else
