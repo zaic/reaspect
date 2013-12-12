@@ -163,7 +163,7 @@ grammar Reaspect
 
 
     rule arithmetic
-        val:[a-zA-Z0-9_\+\-\*\/\s]+ {
+        val:[a-zA-Z0-9_\+\-\*\/\s\%\(\)]+ {
             def expression
                 val.text_value
             end

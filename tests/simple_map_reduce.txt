@@ -8,5 +8,6 @@ double sqrSum
 >> sqrSum
 
 inArray = fillArray(randSeed)
-outArray[i] = squareRoot(inArray[i]) for i = 0 ... kArrSize;
+outArray[i] = squareRoot(inArray[(i+1)%kArrSize]) for i = 0 ... kArrSize / 2;
+outArray[i] = cubicRoot(inArray[(i+1)%kArrSize]) for i = kArrSize / 2 ... kArrSize;
 sqrSum = sumArray(outArray)
