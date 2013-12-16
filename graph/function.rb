@@ -16,7 +16,7 @@ class FunctionNode < GraphNode
     end
 
     def distance
-        @in.reduce(0){ |res, node| res + node.distance }
+        @in.reduce(0){ |res, node| res + node.distance } + @cost
     end
 
     def can_dfs?
@@ -28,8 +28,8 @@ class FunctionNode < GraphNode
         return if @visited != @in.size
         @visited = :dfs
 
-        @distance += @cost
-        @out.each{ |node| node.distance = [node.distance, @distance].min }
+        # $stderr.puts 'Function ' + name + ' has distance ' + @distance.to_s
+        @out.each{ |node| node.distance = [node.distance, distance].min }
         @out.clone
     end
 

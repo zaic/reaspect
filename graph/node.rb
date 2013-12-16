@@ -1,3 +1,7 @@
+class GraphException < StandardError
+
+end
+
 class GraphNode
 
     attr_accessor :in, :out

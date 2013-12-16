@@ -21,6 +21,7 @@ class VariableNode < GraphNode
         return if @visited == :top_sort
         @visited = :top_sort
         @ancestor_function = @in.select{ |fun| [:dfs, :top_sort].include?(fun.visited) }.min
+        raise GraphException.new "Variable '#{name}'' can't be calculated." if @ancestor_function == nil
         @ancestor_function.top_sort(order)
     end
 

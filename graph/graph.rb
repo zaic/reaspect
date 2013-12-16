@@ -3,19 +3,15 @@ require_relative 'variable'
 require_relative 'array'
 require_relative 'function'
 
-class GraphException < StandardError
-
-end
-
 class ReaspectGraph
 
     attr_reader :constants, :variables, :arrays, :functions, :order
     attr_reader :input, :output
 
     def eval_index(expression, counters = {})
-        expression = (counters.merge(@constants)).reduce('') { |str, cur| str +=  "#{cur[0]} = #{cur[1]}; " } + expression
+        expression = (counters.merge(@constants)).reduce('') { |str, cur| str +=  "#{cur[0]} = #{cur[1]}; " } + expression.to_s
         # p expression
-        eval(expression)
+        res = eval(expression)
     end
 
     def fill_constants(statement)
@@ -144,8 +140,8 @@ class ReaspectGraph
         dfs_queue = []
         @input.each{ |var| var.distance = 0; dfs_queue << var }
         while node = dfs_queue.select{ |t| t.visited != :dfs }.min
-            $stderr.puts "dfs from " + node.name + ' with distance = ' + node.distance.to_s
-            dfs_queue += node.dfs.flatten
+            # $stderr.puts "dfs from " + node.name + ' with distance = ' + node.distance.to_s
+            dfs_queue += node.dfs.to_a.flatten
         end
 
         @input.each{ |var| var.visited = :top_sort }
