@@ -1,0 +1,26 @@
+int a, b, c
+double alpha, betta
+int p
+double h, s
+
+c = Hypotenuse(a, b)
+a = CathetusA(c, b)
+b = CathetusB(c, a)
+
+alpha, betta = Angles(a, b, c)
+alpha = AngRevAlpha(betta)
+betta = AngRevbetta(alpha)
+
+a = CatCos(c, betta)
+b = CatSin(c, betta)
+c = HypCos(a, betta)
+c = HypSin(b, betta)
+
+p = JustSum(a, b, c)
+h = HeightA(a, betta)
+h = HeightB(b, alpha)
+s = SqrtHeight(c, h)
+s = SqrtPerim(a, b, c)
+
+<< a = 3, c = 5
+>> a, b, c, alpha, betta, p, h, s

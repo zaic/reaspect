@@ -1,0 +1,18 @@
+int n
+double length
+double inner_radius, outer_radius
+double square, perimeter, alpha
+
+inner_radius = InvInRadius(outer_radius, n)
+outer_radius = InvOutRadius(inner_radius, n) [5]
+n = NumberFromRadius(inner_radius, outer_radius)
+
+length = RadiusToLen(outer_radius, n)
+n = LenToNumber(outer_radius, length)
+outer_radius = LenToRadius(length, n) [3]
+
+square = CalcSquare(n, length)
+perimeter = CalcPerim(n, length)
+
+<< n = 4, length = 1, inner_radius = 0.5
+>> outer_radius
