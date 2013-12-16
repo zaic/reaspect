@@ -6,8 +6,8 @@ int randSeed
 << randSeed = 1
 
 inputArray = initArray(randSeed)
-sumArray[i][0] = initFrame(inputArray[i][0]) for i = 0 ... kArrSize;
-sumArray[0][i] = initFrame(inputArray[0][i]) for i = 0 ... kArrSize;
+sumArray[i][0] = initFrameUp(inputArray[i][0]) for i = 0 ... kArrSize;
+sumArray[0][i] = initFrameLeft(inputArray[0][i]) for i = 0 ... kArrSize;
 sumArray[i][j] = partSum(inputArray[i][j], sumArray[i-1][j], sumArray[i][j-1])
     for i = 1 ... kArrSize;
         for j = 1 ... kArrSize;
