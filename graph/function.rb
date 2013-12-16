@@ -2,11 +2,12 @@ require_relative 'node'
 
 class FunctionNode < GraphNode
 
-    attr_reader :visited, :code_name
+    attr_reader :code_name
 
-    def initialize(name, code_name)
+    def initialize(name, code_name, cost)
         super(name)
         @code_name = code_name
+        @cost = cost
         @visited = 0
     end
 
@@ -14,11 +15,22 @@ class FunctionNode < GraphNode
         @visited == :top_sort
     end
 
+    def distance
+        @in.reduce(0){ |res, node| res + node.distance }
+    end
+
+    def can_dfs?
+        @in.reduce(true){ |res, node| res and node.visited == :dfs }
+    end
+
     def dfs
         @visited += 1
         return if @visited != @in.size
         @visited = :dfs
-        @out.each{ |var| var.dfs }
+
+        @distance += @cost
+        @out.each{ |node| node.distance = [node.distance, @distance].min }
+        @out.clone
     end
 
     def top_sort(order)

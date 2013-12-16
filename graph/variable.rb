@@ -2,7 +2,6 @@ require_relative 'node'
 
 class VariableNode < GraphNode
 
-    attr_accessor :visited
     attr_reader :ancestor_function, :type
     attr_accessor :value
 
@@ -14,13 +13,14 @@ class VariableNode < GraphNode
     def dfs
         return if @visited == :dfs
         @visited = :dfs
-        @out.each{ |node| node.dfs }
+        @out.each{ |node| node.distance = [node.distance, @distance].min }
+        @out.select{ |node| node.can_dfs? }
     end
 
     def top_sort(order)
         return if @visited == :top_sort
         @visited = :top_sort
-        @ancestor_function = @in.detect { |fun| [:dfs, :top_sort].include?(fun.visited) }
+        @ancestor_function = @in.select{ |fun| [:dfs, :top_sort].include?(fun.visited) }.min
         @ancestor_function.top_sort(order)
     end
 

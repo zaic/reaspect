@@ -2,9 +2,7 @@ require_relative 'node'
 
 class ArrayNode < VariableNode
 
-    # attr_accessor :visited
     attr_reader :elements, :dims
-    # attr_accessor
 
     def initialize(name, type, dims)
         super(name, type)
@@ -16,20 +14,26 @@ class ArrayNode < VariableNode
     def dfs
         return if @visited == :dfs
         @visited = :dfs
-        @out.each{ |var| var.dfs }
-        @elements.each{ |element| element.dfs }
+        # @out.each{ |var| var.dfs }
+        # @elements.each{ |element| element.dfs }
+        (@out + @elements).select do |node|
+            node.distance = [node.distance, @distance].min
+            node.can_dfs?
+        end
     end
 
-    def child_dfs
+    def child_dfs?
         @child_counter -= 1
-        dfs if @child_counter == 0
+        return false if @child_counter > 0
+        @distance = [@distance, @elements.reduce(0){ |sum, node| sum + node.distance}].min
+        true
     end
 
     def top_sort(order)
         return if @visited == :top_sort
         @visited = :top_sort
 
-        @ancestor_function = @in.detect { |fun| [:dfs, :top_sort].include?(fun.visited) }
+        @ancestor_function = @in.select{ |fun| [:dfs, :top_sort].include?(fun.visited) }.min
         if @ancestor_function
             @ancestor_function.top_sort(order)
         else
@@ -81,8 +85,9 @@ class ArrayElementNode < VariableNode
 
     def dfs
         return if @visited == :dfs
-        super
-        @parent_array.child_dfs
+        res = super
+        res << [@parent_array] if @parent_array.child_dfs?
+        res
     end
 
     def code_name
@@ -92,7 +97,7 @@ class ArrayElementNode < VariableNode
     def top_sort(order)
         return if @visited == :top_sort
         @visited = :top_sort
-        @ancestor_function = @in.detect { |fun| [:dfs, :top_sort].include?(fun.visited) }
+        @ancestor_function = @in.select{ |fun| [:dfs, :top_sort].include?(fun.visited) }.min
         if @ancestor_function
             @ancestor_function.top_sort(order)
         else

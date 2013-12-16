@@ -1,3 +1,4 @@
+require 'set'
 require_relative 'variable'
 require_relative 'array'
 require_relative 'function'
@@ -50,7 +51,9 @@ class ReaspectGraph
     end
 
     def add_scalar_function(st)
-        node = FunctionNode.new(st[:name], st[:code_name] ? st[:code_name] : st[:name]) # ToDo refactor
+        # ToDo refactor
+        # ToDo function cost can be expression
+        node = FunctionNode.new(st[:name], st[:code_name] ? st[:code_name] : st[:name], st[:cost].to_i)
         st[:arguments].each do |arg|
             arg_node = @variables[generate_var_name(arg)]
             raise GraphException.new "Unknown variable '#{arg}' in function '#{st[:name]}' arguments." unless arg_node
@@ -102,6 +105,7 @@ class ReaspectGraph
             cur_st = { :statement => :function,
                        :name      => st[:name] + '_' + counters.each_value.map { |val| val.to_s }.join('_') ,
                        :code_name => st[:name],
+                       :cost      => st[:cost],
                        :arguments => st[:arguments].map{ |arg| { :name => generate_var_name(arg, counters), :dims => [] } },
                        :result    => st[:result].map { |arg| { :name => generate_var_name(arg, counters), :dims => [] } } }
             add_scalar_function(cur_st)
@@ -137,7 +141,13 @@ class ReaspectGraph
     end
 
     def top_sort
-        @input.each{ |var| var.dfs }
+        dfs_queue = []
+        @input.each{ |var| var.distance = 0; dfs_queue << var }
+        while node = dfs_queue.select{ |t| t.visited != :dfs }.min
+            $stderr.puts "dfs from " + node.name + ' with distance = ' + node.distance.to_s
+            dfs_queue += node.dfs.flatten
+        end
+
         @input.each{ |var| var.visited = :top_sort }
         @output.each{ |var| var.top_sort(@order) }
     end

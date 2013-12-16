@@ -105,6 +105,10 @@ grammar Reaspect
         var_arg:(variable_list)?
         ')' spaces_opt
 
+        function_cost:(
+            '[' spaces_opt cost:arithmetic spaces_opt ']' spaces_opt
+        )?
+
         mass_eval:(
             'for' spaces_req counter:name spaces_opt
             '=' spaces_opt bound_from:arithmetic spaces_opt
@@ -117,6 +121,7 @@ grammar Reaspect
                 { :arguments => (var_arg.elements ? var_arg.variables: []),
                   :result    => var_res.variables,
                   :name      => fun_name.name,
+                  :cost      => (function_cost.elements ? function_cost.cost.expression : 1),
                   :mass      => mass_eval.elements.map do |counter|
                     {
                         :counter    => counter.counter.name,
