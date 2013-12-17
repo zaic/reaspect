@@ -1,9 +1,13 @@
-const qArrSize = 3
+const kArrSize = 10
 
-int to, from
-int arr[qArrSize], sqr[qArrSize]
->> to
-<< from = 5
-arr[0], arr[1], arr[2] = initRand(from)
-sqr[i] = sqrf(arr[i]) for i = 0 ... qArrSize;
-to = doSum(sqr)
+int randSeed
+double inArray[kArrSize], outArray[kArrSize]
+double sqrSum
+
+<< randSeed = 1
+>> sqrSum
+
+inArray = fillArray(randSeed)
+outArray[i] = squareRoot(inArray[(i+1)%kArrSize]) for i = 0 ... kArrSize / 2;
+outArray[i] = cubicRoot(inArray[(i+1)%kArrSize]) for i = kArrSize / 2 ... kArrSize;
+sqrSum = sumArray(outArray)

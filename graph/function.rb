@@ -57,7 +57,7 @@ class FunctionNode < GraphNode
     end
 
     def check_deps
-        @in.each{ |var| var.ancestor_function.resolve << name if var.ancestor_function }
+        @in.each{ |var| [var.ancestor_function].flatten.each{ |fun| fun.resolve << name} if var.ancestor_function }
     end
 
     def generate_class

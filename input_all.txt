@@ -19,5 +19,5 @@ a = testMass(test[i]) for i = 0 ... 2;
 int t
 >> t
 int arr[3], sqr[3], sum[3]
-sqr[i] = doSqrt(arr[i]) for i = 0 ... 2;
+sqr[i] = doSqrt(arr[i]) [2] for i = 0 ... 2;
 sum[i] = doSum(arr[i], sum[i-1]) for i = 1 ... 2;
