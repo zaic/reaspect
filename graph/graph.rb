@@ -146,7 +146,7 @@ class ReaspectGraph
         dfs_queue = []
         @input.each{ |var| var.distance = 0; dfs_queue << var }
         while node = dfs_queue.select{ |t| t.visited != :dfs }.min
-            # $stderr.puts "dfs from " + node.name + ' with distance = ' + node.distance.to_s
+            # $stderr.puts "dfs from " + node.name + ' with distance = ' + node.distance.to_s if node.visited != :dfs
             dfs_queue += node.dfs.to_a.flatten
         end
 
