@@ -9,9 +9,15 @@ class ReaspectGraph
     attr_reader :input, :output
 
     def eval_index(expression, counters = {})
+        orig_expression = expression
         expression = (counters.merge(@constants)).reduce('') { |str, cur| str +=  "#{cur[0]} = #{cur[1]}; " } + expression.to_s
         # p expression
-        res = eval(expression)
+        begin
+            res = eval(expression)
+        rescue Exception => e
+            raise GraphException.new "Can't eval index expression '#{orig_expression}' with error: '#{e.message}'"
+        end
+        res
     end
 
     def fill_constants(statement)
