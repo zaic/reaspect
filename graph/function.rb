@@ -45,7 +45,7 @@ class FunctionNode < GraphNode
     end
 
     def generate_code
-        "    scheduler.registerTask(new #{name}());\n"
+        "    scheduler.registerTask(new Task_#{name}());\n"
     end
 
     def generate_header
@@ -64,11 +64,11 @@ class FunctionNode < GraphNode
         var_def = @out.map{ |var| var.generate_definition }.join
         arg_def = @in.map { |var| var.code_name }.join(', ') + ',   ' +
             @out.map{ |var| var.code_name }.join(', ');
-        dep_def = resolve.map{ |s| '"' + s + '"'}.join(', ')
+        dep_def = resolve.map{ |s| '"Task_' + s + '"'}.join(', ')
 
         var_def +
-            "struct #{name} : public Reaspect::Task {\n\n" +
-            "    #{name}() : Task(\"#{name}\", #{@in.size}, vector<string>{#{dep_def}}) { }\n\n" +
+            "struct Task_#{name} : public Reaspect::Task {\n\n" +
+            "    Task_#{name}() : Task(\"Task_#{name}\", #{@in.select{ |var| var.ancestor_function }.size}, vector<string>{#{dep_def}}) { }\n\n" +
             "    virtual void go() {\n" +
             "        " + @code_name + '(' + arg_def + "); \n" +
             "    }\n};\n\n"

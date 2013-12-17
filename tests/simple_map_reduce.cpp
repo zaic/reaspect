@@ -11,6 +11,10 @@ void squareRoot (const double& in, double& out) {
     out = sqrt(in);
 }
 
+void cubicRoot (const double& in, double& out) {
+    out = cbrt(in);
+}
+
 void sumArray (double outArray[10], double& sum) {
     sum = 0;
     for (int i = 0; i < 10; ++i) sum += outArray[i];
