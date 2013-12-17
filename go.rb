@@ -41,22 +41,43 @@ $stderr.print "3. Generating C++ program... "
 
 
 puts '#include <iostream>'
-puts 'using std::cout;'
-puts 'using std::endl;'
-puts
-graph.order.map{ |fun| graph.functions[fun[0]] }.sort_by{ |fun| fun.code_name }.uniq{ |fun| fun.code_name }.each{ |fun| puts fun.generate_header }
-puts
-puts 'int main() {'
+puts '#include "scheduler.h"'
+puts 'using namespace std;'
 puts
 
+# functions declaration
+graph.order.map{ |fun| graph.functions[fun[0]] }.sort_by{ |fun| fun.code_name }.uniq{ |fun| fun.code_name }.each{ |fun| puts fun.generate_header }
+puts
+puts
+
+# variables definition
 graph.variables.each_value.select{ |var| var.ancestor_function == nil and var.value != nil }.each{ |var| puts var.generate_code }
 graph.arrays.each_value{ |arr| puts arr.generate_code }
 puts
+puts
+
+# generate classes for scheduler
+graph.order.each{ |fun| graph.functions[fun[0]].check_deps }
+graph.order.each{ |fun| puts graph.functions[fun[0]].generate_class }
+puts
+puts
+
+# main function
+puts 'int main() {'
+puts '    Reaspect::Scheduler scheduler;'
+puts
+
+# fill scheduler with generated tasks
 graph.order.each{ |fun| puts graph.functions[fun[0]].generate_code }
+puts
 
+# run and print result
+puts '    scheduler.start();'
+puts '    scheduler.wait();'
+puts
 graph.output.each { |var| puts var.generate_output }
-
-puts 'return 0;'
+puts
+puts '    return 0;'
 puts '}'
 
 $stderr.puts 'OK'

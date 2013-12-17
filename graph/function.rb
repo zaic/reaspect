@@ -2,13 +2,14 @@ require_relative 'node'
 
 class FunctionNode < GraphNode
 
-    attr_reader :code_name
+    attr_reader :code_name, :resolve
 
     def initialize(name, code_name, cost)
         super(name)
         @code_name = code_name
         @cost = cost
         @visited = 0
+        @resolve = []
     end
 
     def execute?
@@ -44,10 +45,7 @@ class FunctionNode < GraphNode
     end
 
     def generate_code
-        var_def = @out.map{ |var| var.generate_definition }.join
-        arg_def = @in.map { |var| var.code_name }.join(', ') + ',   ' +
-                  @out.map{ |var| var.code_name }.join(', ');
-        var_def + @code_name + '(' + arg_def + ");\n\n"
+        "    scheduler.registerTask(new #{name}());\n"
     end
 
     def generate_header
@@ -56,6 +54,24 @@ class FunctionNode < GraphNode
         arg_def = @in.map { |var| var.generate_argument_code + ', ' }.join +
                   @out.map{ |var| var.generate_result_code }.join(', ');
         'void ' + @code_name + ' (' + arg_def + ");\n"
+    end
+
+    def check_deps
+        @in.each{ |var| var.ancestor_function.resolve << name if var.ancestor_function }
+    end
+
+    def generate_class
+        var_def = @out.map{ |var| var.generate_definition }.join
+        arg_def = @in.map { |var| var.code_name }.join(', ') + ',   ' +
+            @out.map{ |var| var.code_name }.join(', ');
+        dep_def = resolve.map{ |s| '"' + s + '"'}.join(', ')
+
+        var_def +
+            "struct #{name} : public Reaspect::Task {\n\n" +
+            "    #{name}() : Task(\"#{name}\", #{@in.size}, vector<string>{#{dep_def}}) { }\n\n" +
+            "    virtual void go() {\n" +
+            "        " + @code_name + '(' + arg_def + "); \n" +
+            "    }\n};\n\n"
     end
 
 end

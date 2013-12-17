@@ -56,7 +56,7 @@ class VariableNode < GraphNode
     end
 
     def generate_output
-        'cout << ' + '"' + name + '" ' + ' << " = " << ' + code_name + ' << endl;'
+        '    cout << ' + '"' + name + '" ' + ' << " = " << ' + code_name + ' << endl;'
     end
 
 end
